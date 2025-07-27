@@ -39,7 +39,7 @@ stirling_pdf_systemd_wanted_services_list_custom: []
 
 stirling_pdf_container_additional_mounts: []
 
-stirling_pdf_version: 0.46.2-fat
+stirling_pdf_version: 1.1.0-fat
 
 # Project source code URL: https://github.com/Stirling-Tools/Stirling-PDF
 stirling_pdf_container_image: "{{ stirling_pdf_container_image_registry_prefix }}stirlingtools/stirling-pdf:{{ stirling_pdf_container_image_tag }}"
