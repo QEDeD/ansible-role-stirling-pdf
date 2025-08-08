@@ -1,0 +1,53 @@
+[Unit]
+Description=PostgreSQL Database for Stirling PDF
+{% for service in stirling_pdf_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in stirling_pdf_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ stirling_pdf_postgres_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ stirling_pdf_postgres_identifier }} 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+                --rm \
+                --name={{ stirling_pdf_postgres_identifier }} \
+                --log-driver=none \
+                --user={{ stirling_pdf_uid }}:{{ stirling_pdf_gid }} \
+                --cap-drop=ALL \
+{% if stirling_pdf_postgres_container_host_bind_port %}
+                -p {{ stirling_pdf_postgres_container_host_bind_port }}:{{ stirling_pdf_postgres_container_port }} \
+{% endif %}
+                --network={{ stirling_pdf_postgres_container_network }} \
+                --mount type=bind,src={{ stirling_pdf_postgres_data_path }},dst=/var/lib/postgresql/data \
+                --shm-size={{ stirling_pdf_postgres_shm_size }} \
+{% if stirling_pdf_postgres_memory_limit %}
+                --memory={{ stirling_pdf_postgres_memory_limit }} \
+{% endif %}
+{% if stirling_pdf_postgres_cpu_limit %}
+                --cpus={{ stirling_pdf_postgres_cpu_limit }} \
+{% endif %}
+                --env POSTGRES_DB={{ stirling_pdf_postgres_db_name }} \
+                --env POSTGRES_USER={{ stirling_pdf_postgres_username }} \
+                --env POSTGRES_PASSWORD={{ stirling_pdf_postgres_password }} \
+                --health-cmd="pg_isready -U {{ stirling_pdf_postgres_username }} {{ stirling_pdf_postgres_db_name }}" \
+                --health-interval=1s \
+                --health-timeout=5s \
+                --health-retries=10 \
+                {{ stirling_pdf_postgres_container_image }}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ stirling_pdf_postgres_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ stirling_pdf_postgres_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ stirling_pdf_postgres_identifier }} 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ stirling_pdf_postgres_identifier }}
+
+[Install]
+WantedBy=multi-user.target

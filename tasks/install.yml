@@ -32,6 +32,8 @@
     - {path: "{{ stirling_pdf_logs_path }}", when: true}
     - {path: "{{ stirling_pdf_data_path }}/config", when: true}
     - {path: "{{ stirling_pdf_data_path }}/customFiles", when: true}
+    - {path: "{{ stirling_pdf_postgres_data_path }}", when: "{{ stirling_pdf_postgres_enabled }}"}
+  when: item.when
 
 
 - name: Ensure stirling_pdf traefik labels are installed
@@ -62,6 +64,19 @@
   community.docker.docker_image:
     name: "{{ stirling_pdf_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+
+- name: Ensure stirling_pdf PostgreSQL container image is pulled
+  community.docker.docker_image:
+    name: "{{ stirling_pdf_postgres_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  when: stirling_pdf_postgres_enabled
+
+- name: Ensure stirling_pdf PostgreSQL service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/stirling_pdf_postgres.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_postgres_identifier }}.service"
+    mode: "0644"
+  when: stirling_pdf_postgres_enabled
 
 - name: Ensure stirling_pdf.service installed
   ansible.builtin.template:

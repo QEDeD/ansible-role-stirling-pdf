@@ -25,6 +25,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 {% endif %}
                 --label-file={{ stirling_pdf_config_path }}/labels \
                 --network={{ stirling_pdf_container_network }} \
+{% if stirling_pdf_container_memory_limit %}
+                --memory={{ stirling_pdf_container_memory_limit }} \
+{% endif %}
+{% if stirling_pdf_postgres_enabled %}
+                --health-cmd="curl -f http://localhost:{{ stirling_pdf_container_http_port }}/api/v1/info/status | grep -q 'UP'" \
+                --health-interval=5s \
+                --health-timeout=10s \
+                --health-retries=16 \
+{% endif %}
 {% for mount in stirling_pdf_container_additional_mounts %}
                 --mount {{ mount }} \
 {% endfor %}
