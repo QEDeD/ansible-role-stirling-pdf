@@ -29,7 +29,7 @@ stirling_pdf_install_calibre: false
 
 stirling_pdf_systemd_required_services_list: "{{ stirling_pdf_systemd_required_services_list_default + stirling_pdf_systemd_required_services_list_auto + stirling_pdf_systemd_required_services_list_custom }}"
 stirling_pdf_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
-stirling_pdf_systemd_required_services_list_auto: []
+stirling_pdf_systemd_required_services_list_auto: "{{ [stirling_pdf_postgres_identifier + '.service'] if stirling_pdf_postgres_enabled else [] }}"
 stirling_pdf_systemd_required_services_list_custom: []
 
 stirling_pdf_systemd_wanted_services_list: "{{ stirling_pdf_systemd_wanted_services_list_default + stirling_pdf_systemd_wanted_services_list_auto + stirling_pdf_systemd_wanted_services_list_custom }}"
@@ -39,12 +39,43 @@ stirling_pdf_systemd_wanted_services_list_custom: []
 
 stirling_pdf_container_additional_mounts: []
 
+# PostgreSQL database support
+stirling_pdf_postgres_enabled: false
+
+# PostgreSQL configuration
+stirling_pdf_postgres_identifier: "{{ stirling_pdf_identifier }}-postgres"
+stirling_pdf_postgres_container_image: "postgres:17.2-alpine"
+stirling_pdf_postgres_container_network: "{{ stirling_pdf_container_network }}"
+
+# PostgreSQL database settings
+stirling_pdf_postgres_db_name: stirling_pdf
+stirling_pdf_postgres_username: admin
+stirling_pdf_postgres_password: stirling
+
+# PostgreSQL data path
+stirling_pdf_postgres_data_path: "{{ stirling_pdf_data_path }}/postgres"
+
+# PostgreSQL resource limits
+stirling_pdf_postgres_memory_limit: 512m
+stirling_pdf_postgres_cpu_limit: "0.5"
+stirling_pdf_postgres_shm_size: 512m
+
+# PostgreSQL container port (for external access if needed)
+stirling_pdf_postgres_container_port: 5432
+stirling_pdf_postgres_container_host_bind_port: ""
+
+# Database connection configuration for Stirling PDF
+stirling_pdf_postgres_datasource_url: "jdbc:postgresql://{{ stirling_pdf_postgres_identifier }}:{{ stirling_pdf_postgres_container_port }}/{{ stirling_pdf_postgres_db_name }}"
+
+# Memory limit for Stirling PDF when using PostgreSQL (from official example)
+stirling_pdf_container_memory_limit: "{{ '4G' if stirling_pdf_postgres_enabled else '' }}"
+
 stirling_pdf_version: 1.1.0-fat
 
 # Project source code URL: https://github.com/Stirling-Tools/Stirling-PDF
 stirling_pdf_container_image: "{{ stirling_pdf_container_image_registry_prefix }}stirlingtools/stirling-pdf:{{ stirling_pdf_container_image_tag }}"
 stirling_pdf_container_image_registry_prefix: docker.stirlingpdf.com/
-stirling_pdf_container_image_tag: "{{ stirling_pdf_version }}"
+stirling_pdf_container_image_tag: "{{ stirling_pdf_version }}{{ '-postgres' if stirling_pdf_postgres_enabled else '' }}"
 stirling_pdf_container_image_force_pull: "{{ stirling_pdf_container_image.endswith(':latest') }}"
 
 stirling_pdf_container_network: '{{ stirling_pdf_identifier }}'

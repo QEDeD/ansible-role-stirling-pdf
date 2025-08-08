@@ -5,15 +5,15 @@ traefik.docker.network={{ stirling_pdf_container_labels_traefik_docker_network }
 
 {% set middlewares = [] %}
 
-{% if outline_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ outline_identifier }}-slashless-redirect.redirectregex.regex=({{ outline_container_labels_traefik_path_prefix | quote }})$
-traefik.http.middlewares.{{ outline_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
-{% set middlewares = middlewares + [outline_identifier + '-slashless-redirect'] %}
+{% if stirling_pdf_path_prefix != '/' %}
+traefik.http.middlewares.{{ stirling_pdf_identifier }}-slashless-redirect.redirectregex.regex=({{ stirling_pdf_path_prefix | quote }})$
+traefik.http.middlewares.{{ stirling_pdf_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [stirling_pdf_identifier + '-slashless-redirect'] %}
 {% endif %}
 
-{% if outline_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ outline_identifier }}-strip-prefix.stripprefix.prefixes={{ outline_container_labels_traefik_path_prefix }}
-{% set middlewares = middlewares + [outline_identifier + '-strip-prefix'] %}
+{% if stirling_pdf_path_prefix != '/' %}
+traefik.http.middlewares.{{ stirling_pdf_identifier }}-strip-prefix.stripprefix.prefixes={{ stirling_pdf_path_prefix }}
+{% set middlewares = middlewares + [stirling_pdf_identifier + '-strip-prefix'] %}
 {% endif %}
 
 {% if stirling_pdf_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
@@ -41,7 +41,7 @@ traefik.http.routers.{{ stirling_pdf_identifier }}.middlewares={{ middlewares | 
 {% endif %}
 traefik.http.routers.{{ stirling_pdf_identifier }}.service={{ stirling_pdf_identifier }}
 traefik.http.routers.{{ stirling_pdf_identifier }}.entrypoints={{ stirling_pdf_container_labels_traefik_entrypoints }}
-traefik.http.routers.{{ stirling_pdf_identifier }}.tls={{ stirling_pdf_container_labels_traefik_tls | to_json }}
+traefik.http.routers.{{ stirling_pdf_identifier }}.tls={{ stirling_pdf_container_labels_traefik_tls | lower }}
 {% if stirling_pdf_container_labels_traefik_tls %}
 traefik.http.routers.{{ stirling_pdf_identifier }}.tls.certResolver={{ stirling_pdf_container_labels_traefik_tls_certResolver }}
 {% endif %}

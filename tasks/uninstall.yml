@@ -5,6 +5,11 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_identifier }}.service"
   register: stirling_pdf_service_stat
 
+- name: Check existence of stirling_pdf PostgreSQL systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_postgres_identifier }}.service"
+  register: stirling_pdf_postgres_service_stat
+
 - when: stirling_pdf_service_stat.stat.exists | bool
   block:
     - name: Ensure stirling_pdf service is stopped
@@ -17,6 +22,20 @@
         dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_identifier }}.service"
         state: absent
 
+- when: stirling_pdf_postgres_service_stat.stat.exists | bool
+  block:
+    - name: Ensure stirling_pdf PostgreSQL service is stopped
+      ansible.builtin.service:
+        name: "{{ stirling_pdf_postgres_identifier }}"
+        state: stopped
+        daemon_reload: true
+    - name: Ensure stirling_pdf PostgreSQL service doesn't exist
+      ansible.builtin.file:
+        dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_postgres_identifier }}.service"
+        state: absent
+
+- when: stirling_pdf_service_stat.stat.exists | bool or stirling_pdf_postgres_service_stat.stat.exists | bool
+  block:
     - name: Ensure stirling_pdf base path is files deleted (make sure to delete node data)
       ansible.builtin.file:
         path: "{{ stirling_pdf_base_path }}"
