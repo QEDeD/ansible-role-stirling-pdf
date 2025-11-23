@@ -18,6 +18,7 @@ stirling_pdf_data_path: "{{ stirling_pdf_base_path }}/data"
 stirling_pdf_trainingData_path: "{{ stirling_pdf_data_path }}/trainingData"
 stirling_pdf_env_path: "{{ stirling_pdf_config_path }}/env"
 stirling_pdf_logs_path: "{{ stirling_pdf_data_path }}/logs"
+stirling_pdf_pipeline_default_webui_configs_path: "{{ stirling_pdf_data_path }}/pipeline/defaultWebUIConfigs"
 
 # temporary folder used for processing - large pdfs may require larger space
 stirling_pdf_container_tmpfs_size: "100m"
@@ -68,6 +69,9 @@ stirling_pdf_locale: 'en_GB'
 # Will set GTS_TRUSTED_PROXIES
 # By default this is set to all private IPs (https://datatracker.ietf.org/doc/html/rfc1918#section-3)
 stirling_pdf_trusted_proxies: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+
+# Runtime umask used inside the container. Keep as a string to preserve any leading zero.
+stirling_pdf_umask: "022"
 
 # Additional environment variables to pass to the stirling_pdf container.
 # You can use this to further influence the default configuration.

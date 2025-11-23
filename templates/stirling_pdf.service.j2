@@ -18,8 +18,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 --rm \
                 --name={{ stirling_pdf_identifier }} \
                 --log-driver=none \
-                --user={{ stirling_pdf_uid }}:{{ stirling_pdf_gid }} \
-                --cap-drop=ALL \
 {% if stirling_pdf_container_http_host_bind_port %}
                 -p {{ stirling_pdf_container_http_host_bind_port }}:{{ stirling_pdf_container_http_port }} \
 {% endif %}

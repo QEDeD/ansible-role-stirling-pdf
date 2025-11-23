@@ -33,6 +33,7 @@
     - {path: "{{ stirling_pdf_data_path }}/config", when: true}
     - {path: "{{ stirling_pdf_data_path }}/customFiles", when: true}
     - {path: "{{ stirling_pdf_data_path }}/pipeline", when: true}
+    - {path: "{{ stirling_pdf_pipeline_default_webui_configs_path }}", when: true}
 
 
 - name: Ensure stirling_pdf traefik labels are installed
