@@ -15,7 +15,7 @@ stirling_pdf_gid: ''
 stirling_pdf_base_path: "/{{ stirling_pdf_identifier }}"
 stirling_pdf_config_path: "{{ stirling_pdf_base_path }}/config"
 stirling_pdf_data_path: "{{ stirling_pdf_base_path }}/data"
-stirling_pdf_trainingData_path: "{{ stirling_pdf_data_path }}/trainingData"
+stirling_pdf_training_data_path: "{{ stirling_pdf_data_path }}/trainingData"
 stirling_pdf_env_path: "{{ stirling_pdf_config_path }}/env"
 stirling_pdf_logs_path: "{{ stirling_pdf_data_path }}/logs"
 stirling_pdf_pipeline_default_webui_configs_path: "{{ stirling_pdf_data_path }}/pipeline/defaultWebUIConfigs"
@@ -28,12 +28,26 @@ stirling_pdf_extra_config: ''
 # to download calibre onto stirling-pdf enabling pdf to/from book and advanced html conversion
 stirling_pdf_install_calibre: false
 
-stirling_pdf_systemd_required_services_list: "{{ stirling_pdf_systemd_required_services_list_default + stirling_pdf_systemd_required_services_list_auto + stirling_pdf_systemd_required_services_list_custom }}"
-stirling_pdf_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+stirling_pdf_systemd_required_services_list: >-
+  {{
+    stirling_pdf_systemd_required_services_list_default
+    + stirling_pdf_systemd_required_services_list_auto
+    + stirling_pdf_systemd_required_services_list_custom
+  }}
+stirling_pdf_systemd_required_services_list_default: >-
+  {{
+    [devture_systemd_docker_base_docker_service_name]
+    if devture_systemd_docker_base_docker_service_name else []
+  }}
 stirling_pdf_systemd_required_services_list_auto: []
 stirling_pdf_systemd_required_services_list_custom: []
 
-stirling_pdf_systemd_wanted_services_list: "{{ stirling_pdf_systemd_wanted_services_list_default + stirling_pdf_systemd_wanted_services_list_auto + stirling_pdf_systemd_wanted_services_list_custom }}"
+stirling_pdf_systemd_wanted_services_list: >-
+  {{
+    stirling_pdf_systemd_wanted_services_list_default
+    + stirling_pdf_systemd_wanted_services_list_auto
+    + stirling_pdf_systemd_wanted_services_list_custom
+  }}
 stirling_pdf_systemd_wanted_services_list_default: []
 stirling_pdf_systemd_wanted_services_list_auto: []
 stirling_pdf_systemd_wanted_services_list_custom: []
@@ -99,23 +113,50 @@ stirling_pdf_container_labels_traefik_tls_certResolver: default  # noqa var-nami
 
 # Controls which additional headers to attach to all HTTP requests.
 # To add your own custom request headers, use `stirling_pdf_container_labels_traefik_additional_response_headers_custom`
-stirling_pdf_container_labels_traefik_additional_request_headers: "{{ stirling_pdf_container_labels_traefik_additional_request_headers_auto | combine(stirling_pdf_container_labels_traefik_additional_request_headers_custom) }}"
+stirling_pdf_container_labels_traefik_additional_request_headers: >-
+  {{
+    stirling_pdf_container_labels_traefik_additional_request_headers_auto
+    | combine(stirling_pdf_container_labels_traefik_additional_request_headers_custom)
+  }}
 stirling_pdf_container_labels_traefik_additional_request_headers_auto: {}
 stirling_pdf_container_labels_traefik_additional_request_headers_custom: {}
 
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own custom response headers, use `stirling_pdf_container_labels_traefik_additional_response_headers_custom`
-stirling_pdf_container_labels_traefik_additional_response_headers: "{{ stirling_pdf_container_labels_traefik_additional_response_headers_auto | combine(stirling_pdf_container_labels_traefik_additional_response_headers_custom) }}"
+stirling_pdf_container_labels_traefik_additional_response_headers: >-
+  {{
+    stirling_pdf_container_labels_traefik_additional_response_headers_auto
+    | combine(stirling_pdf_container_labels_traefik_additional_response_headers_custom)
+  }}
 stirling_pdf_container_labels_traefik_additional_response_headers_auto: |
   {{
     {}
-    | combine ({'X-XSS-Protection': stirling_pdf_http_header_xss_protection} if stirling_pdf_http_header_xss_protection else {})
-    | combine ({'X-Frame-Options': stirling_pdf_http_header_frame_options} if stirling_pdf_http_header_frame_options else {})
-    | combine ({'X-Content-Type-Options': stirling_pdf_http_header_content_type_options} if stirling_pdf_http_header_content_type_options else {})
-    | combine ({'Content-Security-Policy': stirling_pdf_http_header_content_security_policy} if stirling_pdf_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': stirling_pdf_http_header_content_permission_policy} if stirling_pdf_http_header_content_permission_policy else {})
-    | combine ({'Strict-Transport-Security': stirling_pdf_http_header_strict_transport_security} if stirling_pdf_http_header_strict_transport_security and stirling_pdf_container_labels_traefik_tls else {})
+    | combine(
+        {'X-XSS-Protection': stirling_pdf_http_header_xss_protection}
+        if stirling_pdf_http_header_xss_protection else {}
+      )
+    | combine(
+        {'X-Frame-Options': stirling_pdf_http_header_frame_options}
+        if stirling_pdf_http_header_frame_options else {}
+      )
+    | combine(
+        {'X-Content-Type-Options': stirling_pdf_http_header_content_type_options}
+        if stirling_pdf_http_header_content_type_options else {}
+      )
+    | combine(
+        {'Content-Security-Policy': stirling_pdf_http_header_content_security_policy}
+        if stirling_pdf_http_header_content_security_policy else {}
+      )
+    | combine(
+        {'Permission-Policy': stirling_pdf_http_header_content_permission_policy}
+        if stirling_pdf_http_header_content_permission_policy else {}
+      )
+    | combine(
+        {'Strict-Transport-Security': stirling_pdf_http_header_strict_transport_security}
+        if stirling_pdf_http_header_strict_transport_security
+        and stirling_pdf_container_labels_traefik_tls else {}
+      )
   }}
 stirling_pdf_container_labels_traefik_additional_response_headers_custom: {}
 

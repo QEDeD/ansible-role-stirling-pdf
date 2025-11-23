@@ -5,7 +5,8 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ stirling_pdf_identifier }}.service"
   register: stirling_pdf_service_stat
 
-- when: stirling_pdf_service_stat.stat.exists | bool
+- name: Remove stirling_pdf when service exists
+  when: stirling_pdf_service_stat.stat.exists | bool
   block:
     - name: Ensure stirling_pdf service is stopped
       ansible.builtin.service:

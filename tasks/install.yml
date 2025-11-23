@@ -19,7 +19,7 @@
     - {path: "{{ stirling_pdf_base_path }}", when: true}
     - {path: "{{ stirling_pdf_config_path }}", when: true}
 
-- name: Ensure stirling_pdf data, log and trainingData path exists
+- name: Ensure stirling_pdf data, log and training data paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -28,7 +28,7 @@
     group: "{{ stirling_pdf_gid }}"
   with_items:
     - {path: "{{ stirling_pdf_data_path }}", when: true}
-    - {path: "{{ stirling_pdf_trainingData_path }}", when: true}
+    - {path: "{{ stirling_pdf_training_data_path }}", when: true}
     - {path: "{{ stirling_pdf_logs_path }}", when: true}
     - {path: "{{ stirling_pdf_data_path }}/config", when: true}
     - {path: "{{ stirling_pdf_data_path }}/customFiles", when: true}
